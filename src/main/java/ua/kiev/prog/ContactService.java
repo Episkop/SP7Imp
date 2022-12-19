@@ -1,6 +1,5 @@
 package ua.kiev.prog;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,17 @@ public class ContactService {
     public void addGroup(Group group) {
         groupRepository.save(group);
     }
+    @Transactional
 
+    public void deleteGroup (Group group) {
+        groupRepository.deleteById(group.getId());
+    }
+
+//    @Transactional
+//    public void deleteGroup(long idGroup){
+//        for (long id: idGroup)
+//        groupRepository.deleteById(id);
+//    }
     @Transactional
     public void deleteContacts(long[] idList) {
         for (long id : idList)
@@ -46,6 +55,10 @@ public class ContactService {
     @Transactional(readOnly=true)
     public List<Contact> findByGroup(Group group, Pageable pageable) {
         return contactRepository.findByGroup(group, pageable);
+    } 
+    @Transactional(readOnly = true)
+    public List<Contact> findByGroup(Group group) {
+        return contactRepository.findByGroup(group);
     }
 
     @Transactional(readOnly = true)
@@ -85,6 +98,12 @@ public class ContactService {
         for (int i = 0; i < 10; i++) {
             contact = new Contact(group, "Other" + i, "OtherSurname" + i, "7654321" + i, "user" + i + "@other.com");
             addContact(contact);
+        }
+    }
+
+    public void deleteContacts(List<Contact> contacts) {
+        for (Contact contact: contacts){
+            contactRepository.deleteById(contact.getId());
         }
     }
 }

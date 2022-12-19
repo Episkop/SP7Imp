@@ -22,12 +22,10 @@ public class MyController {
     }
 
     @GetMapping("/")
-    public String index(Model model,
-                        @RequestParam(required = false, defaultValue = "0") Integer page) {
+    public String index(Model model,@RequestParam(required = false, defaultValue = "0") Integer page) {
         if (page < 0) page = 0;
 
-        List<Contact> contacts = contactService
-                .findAll(PageRequest.of(page, ITEMS_PER_PAGE, Sort.Direction.DESC, "id"));
+        List<Contact> contacts = contactService.findAll(PageRequest.of(page, ITEMS_PER_PAGE, Sort.Direction.DESC, "id"));
 
         model.addAttribute("groups", contactService.findGroups());
         model.addAttribute("contacts", contacts);
@@ -52,7 +50,26 @@ public class MyController {
     public String groupAddPage() {
         return "group_add_page";
     }
+    @GetMapping("/group_delete_page")
+    public String groupDeletePage(Model model) {
+        model.addAttribute("groups", contactService.findGroups());
+        return "group_delete_page";
+    }
+    @PostMapping("/group/delete")
 
+    public String deleteGroup(@RequestParam (value = "toDel[]") long groupId ) {
+        Group group = contactService.findGroup(groupId);
+        List<Contact> contacts = contactService.findByGroup(group);
+        contactService.deleteContacts(contacts);
+        contactService.deleteGroup(group);
+        return "redirect:/";
+
+    }
+
+    //    @GetMapping("/group_delete_page")
+//    public String groupDeletePage(){
+//        return "group_delete_page";
+//    }
     @GetMapping("/group/{id}")
     public String listGroup(
             @PathVariable(value = "id") long groupId,
